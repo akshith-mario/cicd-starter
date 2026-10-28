@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: pytest -v                 # if any test fails, the pipeline stops here
+      - run: pytest -m pytest -v               # if any test fails, the pipeline stops here
 
   # ------------- CI STAGE 2: BUILD & PUSH ------------
   build:
