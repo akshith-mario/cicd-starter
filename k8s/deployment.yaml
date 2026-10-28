@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicd-starter
+  labels:
+    app: cicd-starter
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cicd-starter
+  template:
+    metadata:
+      labels:
+        app: cicd-starter
+    spec:
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        - name: app
+          image: IMAGE_PLACEHOLDER   # the pipeline swaps this for the real image tag
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_VERSION
+              value: VERSION_PLACEHOLDER
+          securityContext:
+            allowPrivilegeEscalation: false
+          readinessProbe:
+            httpGet: { path: /health, port: 8080 }
+            initialDelaySeconds: 3
+          livenessProbe:
+            httpGet: { path: /health, port: 8080 }
+            initialDelaySeconds: 10
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 200m, memory: 128Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cicd-starter
+spec:
+  selector:
+    app: cicd-starter
+  ports:
+    - port: 80
+      targetPort: 8080
